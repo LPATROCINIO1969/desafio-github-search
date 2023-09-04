@@ -69,7 +69,7 @@ class MainActivity : AppCompatActivity() {
 
         if (nome!=null){
           val nomeChar = nome?.toCharArray()
-            nomeUsuario.setText(nomeChar,0,nomeChar?.size )
+          nomeUsuario.setText(nomeChar,0,nomeChar?.size )
         }
     }
 
