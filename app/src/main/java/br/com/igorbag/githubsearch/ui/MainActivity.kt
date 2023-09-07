@@ -2,13 +2,17 @@ package br.com.igorbag.githubsearch.ui
 
 import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import br.com.igorbag.githubsearch.R
@@ -56,6 +60,9 @@ class MainActivity : AppCompatActivity() {
             if (usuario != null){
                 saveUserLocal(usuario)
             }
+            showUserName()
+            setupRetrofit()
+            getAllReposByUserName()
         }
     }
 
@@ -99,7 +106,7 @@ class MainActivity : AppCompatActivity() {
 
     //Metodo responsavel por buscar todos os repositorios do usuario fornecido
     fun getAllReposByUserName() {
-        // TODO 6 - realizar a implementacao do callback do retrofit e chamar o metodo setupAdapter se retornar os dados com sucesso
+        // realizar a implementacao do callback do retrofit e chamar o metodo setupAdapter se retornar os dados com sucesso
 
         val usuario = nomeUsuario.text.toString()
         githubApi.getAllRepositoriesByUser(usuario).enqueue(object:Callback<List<Repository>>{
@@ -112,18 +119,16 @@ class MainActivity : AppCompatActivity() {
                         setupAdapter(it)
                     }
                 } else {
-                    Log.e("Erro ->", "Falha ao retornar o Json")
-//                    Toast.makeText(context,R.string.internet_indisponivel, Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@MainActivity, R.string.internet_indisponivel, Toast.LENGTH_LONG).show()
                 }
 
             }
 
             override fun onFailure(call: Call<List<Repository>>, t: Throwable) {
-//                    Toast.makeText(context,R.string.internet_indisponivel, Toast.LENGTH_LONG).show()
-                Log.e("Erro ->", "Falha ao retornar o Json")
+                    Toast.makeText(this@MainActivity,R.string.internet_indisponivel, Toast.LENGTH_LONG).show()
+
             }
         })
-        Log.d("passou por aqui!", "este evento foi realizado.")
     }
 
     // Metodo responsavel por realizar a configuracao do adapter
@@ -145,8 +150,7 @@ class MainActivity : AppCompatActivity() {
 
 
     // Metodo responsavel por compartilhar o link do repositorio selecionado
-    // Colocar esse metodo no click do share item do adapter
-    fun shareRepositoryLink(urlRepository: String) {
+     fun shareRepositoryLink(urlRepository: String) {
         val sendIntent: Intent = Intent().apply {
             action = Intent.ACTION_SEND
             putExtra(Intent.EXTRA_TEXT, urlRepository)
@@ -158,8 +162,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Metodo responsavel por abrir o browser com o link informado do repositorio
-
-    // Colocar esse metodo no click item do adapter
     fun openBrowser(urlRepository: String) {
         startActivity(
             Intent(
@@ -169,5 +171,6 @@ class MainActivity : AppCompatActivity() {
         )
 
     }
+
 
 }
